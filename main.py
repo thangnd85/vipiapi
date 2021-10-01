@@ -157,10 +157,12 @@ class zing(Resource):
         link = zingmp3(data)
         return {'status': link}    
 class single(Resource):
-    def get(self):
-        data = request.args.get('song', default = 'Tình đơn phương remix')
+    def get(self,song,random):
+        data,random = song,random
         link = ytl(data,random)
-        return {'status': link}              
+#        print (data,random)
+        return {'status': link}  
+#        return jsonify({'data': (data,random)})            
 class Sum(Resource):
     def get(self, a, b):
         return jsonify({'data': a+b})
@@ -168,7 +170,7 @@ class Sum(Resource):
 
 api.add_resource(status, '/')
 api.add_resource(search, '/search')
-api.add_resource(single, '/single')
+api.add_resource(single, '/single/<song>,<random>')
 api.add_resource(nct, '/nct')
 api.add_resource(zing, '/zing')
 api.add_resource(Sum, '/add/<int:a>,<int:b>')
