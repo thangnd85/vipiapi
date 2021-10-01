@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_restful import Resource, Api
 from flask_cors import CORS
-import urllib.request, pafy, random, os, pathlib, sys, time, requests, json, re, datetime, urllib, sys, subprocess
+import urllib.request,random, os, pathlib, sys, time, requests, json, re, datetime, urllib, sys, subprocess
 from os import listdir, path
 from urllib.request import urlretrieve
 from fuzzywuzzy import fuzz
@@ -12,7 +12,10 @@ import xmltodict
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
-
+try:
+    import pafy
+except:
+    os.system('pip install git+https://github.com/mps-youtube/pafy')
 
 def youtube_stream_link(data):
     lists = {'id':[],'name':[],'view':[]}
