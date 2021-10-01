@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 from flask_restful import Resource, Api
 from flask_cors import CORS
-import urllib.request,random, os, pathlib, sys, time, requests, json, re, datetime, urllib, sys, subprocess
+import urllib.request, random, os, pathlib, sys, time, requests, json, re, datetime, urllib, sys, subprocess
 from os import listdir, path
 from urllib.request import urlretrieve
 from fuzzywuzzy import fuzz
 from itertools import combinations
-from youtubesearchpython import VideosSearch
+from youtubesearchpython import *
 from bs4 import BeautifulSoup
 import xmltodict
 app = Flask(__name__)
@@ -19,23 +19,22 @@ except:
     import pafy
 
 def youtube_stream_link(data):
-    lists = {'id':[],'name':[],'view':[]}
-    for video in VideosSearch(data,limit=5).result()['result']:
+    lists = {'id':[],'name':[],'audio':[],'video':[]}
+    for video in CustomSearch(data, VideoSortOrder.viewCount, language = 'vi', region = 'VN',limit=5).result()['result']:
         lists['id'].append(video['id'])
         lists['name'].append(video['title'])
-        lists['view'].append(video['viewCount']['text'].split(' ')[0].replace(',',''))
-    urlid=lists['id'][lists['view'].index(max(lists['view']))]
-
-    video_url="https://www.youtube.com/watch?v="+urlid
-    video = pafy.new(video_url)
-    best_video = video.getbest()
-    best_audio = video.getbestaudio()
-    try:
-        audio_streaming_link = best_audio.url
-    except:
-        audio_streaming_link = best_video.url
-    video_streaming_link = best_video.url
-    return audio_streaming_link, video_streaming_link
+        video_url="https://www.youtube.com/watch?v="+video['id']
+        video = pafy.new(video_url)
+        best_video = video.getbest()
+        best_audio = video.getbestaudio()
+        try:
+            audio_streaming_link = best_audio.url
+        except:
+            audio_streaming_link = best_video.url
+        video_streaming_link = best_video.url
+        lists['audio'].append(audio_streaming_link)
+        lists['video'].append(video_streaming_link)
+    return lists
 
 def zingmp3(data):
     result=None
