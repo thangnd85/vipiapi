@@ -20,7 +20,8 @@ except:
 
 def youtube_stream_link(data):
     lists = {'id':[],'name':[],'audio':[],'video':[]}
-    for video in CustomSearch(data, VideoSortOrder.viewCount, language = 'vi', region = 'VN',limit=5).result()['result']:
+    res = CustomSearch(data, VideoSortOrder.viewCount, language = 'vi', region = 'VN',limit=5).result()['result']
+    for video in res:
         lists['id'].append(video['id'])
         lists['name'].append(video['title'])
         video_url="https://www.youtube.com/watch?v="+video['id']
@@ -35,7 +36,25 @@ def youtube_stream_link(data):
         lists['audio'].append(audio_streaming_link)
         lists['video'].append(video_streaming_link)
     return lists
-
+def ytl(data,random):
+    lists = {'id':[],'name':[],'audio':[],'video':[]}
+    res =  VideosSearch(data, language = 'vi', region = 'VN',limit=5).result()['result']
+    if random == 1:
+        res = random.choice(res)
+    else:
+        res = res[0]
+    videoid=res['id']
+    name=res['title']
+    video_url="https://www.youtube.com/watch?v="+videoid
+    video = pafy.new(video_url)
+    best_video = video.getbest()
+    best_audio = video.getbestaudio()
+    try:
+        audio_streaming_link = best_audio.url
+    except:
+        audio_streaming_link = best_video.url
+    video_streaming_link = best_video.url
+    return audio_streaming_link, video_streaming_link, name
 def zingmp3(data):
     result=None
     if 'của' in data.lower():
@@ -132,6 +151,16 @@ class zing(Resource):
         data = request.args.get('song', default = 'Tình đơn phương remix')
         link = zingmp3(data)
         return {'status': link}
+class zing(Resource):
+    def get(self):
+        data = request.args.get('song', default = 'Tình đơn phương remix')
+        link = zingmp3(data)
+        return {'status': link}    
+class single(Resource):
+    def get(self):
+        data = request.args.get('song', default = 'Tình đơn phương remix')
+        link = ytl(data)
+        return {'status': link}              
 class Sum(Resource):
     def get(self, a, b):
         return jsonify({'data': a+b})
@@ -139,6 +168,7 @@ class Sum(Resource):
 
 api.add_resource(status, '/')
 api.add_resource(search, '/search')
+api.add_resource(single, '/single')
 api.add_resource(nct, '/nct')
 api.add_resource(zing, '/zing')
 api.add_resource(Sum, '/add/<int:a>,<int:b>')
