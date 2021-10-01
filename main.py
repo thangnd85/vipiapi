@@ -16,6 +16,7 @@ try:
     import pafy
 except:
     os.system('pip install git+https://github.com/mps-youtube/pafy')
+    import pafy
 
 def youtube_stream_link(data):
     lists = {'id':[],'name':[],'view':[]}
