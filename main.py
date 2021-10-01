@@ -159,7 +159,7 @@ class zing(Resource):
 class single(Resource):
     def get(self):
         data = request.args.get('song', default = 'Tình đơn phương remix')
-        link = ytl(data)
+        link = ytl(data,random)
         return {'status': link}              
 class Sum(Resource):
     def get(self, a, b):
