@@ -20,7 +20,7 @@ except:
 
 def youtube_stream_link(data):
     lists = {'id':[],'name':[],'audio':[],'video':[]}
-    res = CustomSearch(data, VideoSortOrder.viewCount, language = 'vi', region = 'VN',limit=5).result()['result']
+    res = CustomSearch(data, VideoSortOrder.viewCount,limit=5).result()['result']
     for video in res:
         lists['id'].append(video['id'])
         lists['name'].append(video['title'])
@@ -37,15 +37,13 @@ def youtube_stream_link(data):
         lists['video'].append(video_streaming_link)
     return lists
 def ytl(data,random):
-    lists = {'id':[],'name':[],'audio':[],'video':[]}
-    res =  VideosSearch(data, language = 'vi', region = 'VN',limit=5).result()['result']
+    res =  VideosSearch(data,limit=5).result()['result']
     if random == 1:
         res = random.choice(res)
     else:
         res = res[0]
-    videoid=res['id']
     name=res['title']
-    video_url="https://www.youtube.com/watch?v="+videoid
+    video_url="https://www.youtube.com/watch?v="+res['id']
     video = pafy.new(video_url)
     best_video = video.getbest()
     best_audio = video.getbestaudio()
@@ -160,9 +158,8 @@ class single(Resource):
     def get(self,song,random):
         data,random = song,random
         link = ytl(data,random)
-#        print (data,random)
         return {'status': link}  
-#        return jsonify({'data': (data,random)})            
+        
 class Sum(Resource):
     def get(self, a, b):
         return jsonify({'data': a+b})
